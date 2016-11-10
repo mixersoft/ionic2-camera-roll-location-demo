@@ -20,6 +20,14 @@ export enum mediaSubtype {
   None, PhotoPanorama, PhotoHDR, PhotoScreenshot, PhotoLive, VideoStreamed, VideoHighFrameRate, VideoTimelapse
 }
 
+export interface optionsQuery {
+  from?: Date;
+  to?: Date;
+  mediaType?: mediaType;
+  mediaSubtype?: mediaSubtype;
+  [propName: string]: any;    // map startDate=>from, endDate=>to as convenience
+}
+
 export interface optionsFilter {
   startDate?: Date,
   endDate?: Date,
@@ -47,12 +55,32 @@ export interface cameraRollPhoto {
   momentLocationName?: string
 }
 
+function _localTimeAsDate(localTime:string): Date {
+  try {
+    let dt = new Date(localTime);
+    if (isNaN(dt as any as number) == false)
+      return dt;
+
+    // BUG: Safari does not parse time strings to Date correctly  
+    const [,d,h,m,s] = localTime.match( /(.*)\s(\d*):(\d*):(\d*)\./)
+    dt = new Date(d);
+    dt.setHours(parseInt(h), parseInt(m), parseInt(s));
+    // console.log(`localTimeAsDate=${dt.toISOString()}`)
+    return dt;
+  } catch (err) {
+    throw new Error(`Invalid localTime string, value=${localTime}`);
+  }
+}
+
+
 export class CameraRollWithLoc {
   public isCordova = true;
 
   protected _photos : cameraRollPhoto[] = [];
   protected _filter : optionsFilter = {};
   protected _filteredPhotos : cameraRollPhoto[];
+
+  private _isProcessing: Promise<cameraRollPhoto[]>;
 
   static sortPhotos(
     photos : cameraRollPhoto[]
@@ -76,33 +104,42 @@ export class CameraRollWithLoc {
   /**
    * get cameraRollPhoto[] from CameraRoll using Plugin,
    * uses cached values by default, ignore with force==true
-   * @param  {any}                  interface optionsFilter
+   * @param  optionsQuery
    * @param  {boolean = false}      refresh
    * @return {Promise<cameraRollPhoto[]>}         [description]
    */
-  queryPhotos(options?: any, force:boolean = false) : Promise<cameraRollPhoto[]>{
-    if (this._photos.length && !options && force==false) {
+  queryPhotos(options?: optionsQuery, force:boolean = false) : Promise<cameraRollPhoto[]>{
+    let promise: Promise<cameraRollPhoto[]>;
+    if (!this._isProcessing && this._photos.length && !options && force==false) {
+      // resolve immediately with cached value
       return Promise.resolve(this._photos);
     }
-    // ???: How do you use cordova plugins with TS?
-    // the actual plugin is not exported
+    
+    if (this._isProcessing && !options && force==false){
+      // wait for promise to resolve
+      return this._isProcessing;
+    }
+
     const plugin : any = _.get( window, "cordova.plugins.CameraRollLocation");
-    let pr : Promise<cameraRollPhoto[]>;
-    if (plugin) {
-      pr = plugin['getByMoments'](options)
-    } else {
-      const err = "cordova.plugins.CameraRollLocation not available";
+    if (!plugin) {
+      const err = "cordova.plugins.CameraRollLocation not available.";
       console.error(err);
       throw new Error(err);
     }
-    return pr.then( (photos)=>{
+    // map startDate=>from, endDate=>to as a convenience
+    if (!options.from && options['startDate']) options.from = options['startDate']
+    if (!options.to && options['endDate']) options.to = options['endDate']
+    this._isProcessing = plugin['getByMoments'](options)
+    .then( (photos)=>{
       photos.forEach( (o)=> {
         if (o.location && o.location instanceof GeoJsonPoint == false ) {
           o.location = new GeoJsonPoint(o.location);
         }
       });
-      this._photos = photos;
+      this._isProcessing = null;
+      return this._photos = photos;
     })
+    return this._isProcessing;
   }
 
   /**
@@ -156,7 +193,7 @@ export class CameraRollWithLoc {
       // everything good
       return true;
     });
-    this._filteredPhotos = result
+    this._filteredPhotos = result || [];
     return this;
   }
 
@@ -220,11 +257,11 @@ export class MockCameraRollWithLoc extends CameraRollWithLoc {
   /**
    * get cameraRollPhoto[] from CameraRoll using Plugin,
    * uses cached values by default, ignore with force==true
-   * @param  {any}                  interface optionsFilter
+   * @param  {optionsQuery}         interface optionsQuery
    * @param  {boolean = false}      refresh
    * @return {Promise<cameraRollPhoto[]>}         [description]
    */
-  queryPhotos(options?: any, force:boolean = false) : Promise<cameraRollPhoto[]>{
+  queryPhotos(options?: optionsQuery, force:boolean = false) : Promise<cameraRollPhoto[]>{
     return Promise.resolve(this._photos);
   }
 }

@@ -33,6 +33,16 @@ export class HomePage {
 
   }
 
+  ngOnInit() {
+    this.platform.ready().then(
+      () => {
+        this.cameraRoll.queryPhotos({
+          startDate: new Date('2016-01-01'),
+          endDate: new Date('2016-12-31'),
+        })
+    })
+  }
+
   clear (){
     this.items = [];
     this.location = {lat:0, lng:0};
@@ -46,13 +56,15 @@ export class HomePage {
   }
 
   handleClick (){
-    this.cameraRoll.queryPhotos({
-      startDate: new Date('2016-01-01'),
-      endDate: new Date('2016-12-31'),
-    })
-    .then( (result) => {
-      this.items = result;
-      this.setMarker(this.items[0].location)
+    this.cameraRoll.queryPhotos()
+    .then( ()=>{
+      this.items = this.cameraRoll.filterPhotos({
+        startDate: new Date('2016-01-01'),
+        mediaType: [mediaType.Image]
+      }).getPhotos(5);
+
+      if (this.items.length) 
+        this.setMarker(this.items[0].location);
       if (this.platform.is("cordova") == false) {
         console.warn("cordova not available");
       }

@@ -38,7 +38,7 @@
       <pre >{{ photo | json }}</pre>
 
       <ion-card *ngIf="photo">
-        <img [src]="photo.$src"/>
+      <img [ngStyle]="{'max-width.px': 320}" [src]="photo.$src"/>
         <ion-card-content>
           <ion-card-title>
             {{photo.filename}}

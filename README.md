@@ -1,4 +1,3 @@
-
 # Cordova Plugin `cordova-plugin-camera-roll-location` Demo App
 
 # Installation
@@ -14,14 +13,13 @@ ionic serve
 ```
 
 
-
 ## Install CameraRollWithLoc plugin
 ```
  ionic plugin add --save cordova-plugin-add-swift-support
  ionic plugin add --save "https://github.com/mixersoft/cordova-plugin-camera-roll-location.git"
  ionic plugin add --save cordova-plugin-file
 
- ionic emulate ios
+ ionic platform add ios
+ ionic build ios
 ```
-
 
