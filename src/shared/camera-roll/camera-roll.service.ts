@@ -109,7 +109,6 @@ export class CameraRollWithLoc {
    * @return {Promise<cameraRollPhoto[]>}         [description]
    */
   queryPhotos(options?: optionsQuery, force:boolean = false) : Promise<cameraRollPhoto[]>{
-    let promise: Promise<cameraRollPhoto[]>;
     if (!this._isProcessing && this._photos.length && !options && force==false) {
       // resolve immediately with cached value
       return Promise.resolve(this._photos);
@@ -127,8 +126,8 @@ export class CameraRollWithLoc {
       throw new Error(err);
     }
     // map startDate=>from, endDate=>to as a convenience
-    if (!options.from && options['startDate']) options.from = options['startDate']
-    if (!options.to && options['endDate']) options.to = options['endDate']
+    if (options && !options.from && options['startDate']) options.from = options['startDate']
+    if (options && !options.to && options['endDate']) options.to = options['endDate']
     this._isProcessing = plugin['getByMoments'](options)
     .then( (photos)=>{
       photos.forEach( (o)=> {
