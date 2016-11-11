@@ -169,8 +169,8 @@ export class CameraRollWithLoc {
     // let fromAsLocalTime = new Date(from.valueOf() - from.getTimezoneOffset()*60000).toJSON()
     result = result.filter( (o : any) => {
       // filter on localTime
-      if (from && new Date(o['localTime']) < from) return false;
-      if (to && new Date(o['localTime']) > to) return false;
+      if (from && _localTimeAsDate(o['localTime']) < from) return false;
+      if (to && _localTimeAsDate(o['localTime']) > to) return false;
       if (locationName
         && false === o['momentLocationName'].startsWith(locationName)
         ) return false;
