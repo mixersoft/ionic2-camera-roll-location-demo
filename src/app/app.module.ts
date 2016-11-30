@@ -10,7 +10,7 @@ import { SharedModule } from '../shared/shared.module';
 import { AgmCoreModule } from 'angular2-google-maps/core';
 import {
   CameraRollWithLoc, MockCameraRollWithLoc,
-  ImageService, CordovaImageService, renderPhotoForView
+  ImageServiceFactory, ImageService, CordovaImageService, renderPhotoForView
 } from "../shared/camera-roll/index";
 
 @NgModule({
@@ -41,12 +41,7 @@ import {
   providers: [{
     provide: ImageService
     , deps: [Platform]
-    , useFactory: (platform: Platform)=>{
-        if (platform.is("cordova"))
-          return new CordovaImageService(platform)
-        else
-          return new ImageService(platform)
-      }
+    , useFactory: ImageServiceFactory
   },
   , {
     provide: CameraRollWithLoc

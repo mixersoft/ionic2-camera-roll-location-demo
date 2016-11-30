@@ -11,6 +11,19 @@ declare var cordova;
 // http://stackoverflow.com/questions/39866395/angular2-how-do-i-get-a-different-subclass-of-an-injectable-depending-on-the/39867713#39867713
 const DEMO_SRC = "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQnF13DgaMHi5rmpKuCiHwID9u-msI9qSZsznjRnWv31LBUedCNqw";
 
+
+
+/**
+ * factory function to create ImageService stub when platform is NOT cordova
+ */
+export function ImageServiceFactory (platform: Platform) : ImageService {
+  if (platform.is("cordova"))
+    return new CordovaImageService(platform)
+  else
+    return new ImageService(platform)
+}
+
+
 @Injectable()
 
 /**
