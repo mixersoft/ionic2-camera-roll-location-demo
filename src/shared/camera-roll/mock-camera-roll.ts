@@ -6,6 +6,13 @@ export let cameraRoll = `[{
   "mediaType": 1,
   "mediaSubypes": 0,
   "isFavorite": false,
+  "width": 286,
+  "height": 183,
+  "position": {
+    "lat": 48.8583736,
+    "lng": 2.2922873,
+    "speed": 1.54
+  },
   "location": {
     "type": "Point",
     "coordinates": [

@@ -37,6 +37,6 @@
     <plugin name="cordova-plugin-statusbar" spec="~2.2.0" />
     <plugin name="ionic-plugin-keyboard" spec="~2.2.1" />
     <plugin name="cordova-plugin-add-swift-support" spec="~1.6.0" />
-    <plugin name="com-snaphappi-plugin-camera-roll-location" spec="https://github.com/mixersoft/cordova-plugin-camera-roll-location.git" />
+    <plugin name="com-snaphappi-plugin-camera-roll-location" spec="~0.1.0" />
     <plugin name="cordova-plugin-file" spec="~4.3.0" />
 </widget>

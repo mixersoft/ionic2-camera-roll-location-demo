@@ -10,6 +10,14 @@ import * as sebm from 'angular2-google-maps/core/services/google-maps-types';
 
 declare var google:any;
 
+export interface LatLngLiteral {
+  lat: number,
+  lng: number,
+}
+export interface LatLngSpeedLiteral extends LatLngLiteral {
+  speed?: number
+}
+
 export interface UuidLatLng extends google.maps.LatLng {
   uuid: string;
 }

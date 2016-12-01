@@ -12,14 +12,15 @@
     <sebm-google-map
       #sebmMap
       [zoom]="16"
-      [latitude]="location?.lat"
-      [longitude]="location?.lng"
+      [latitude]="position?.lat()"
+      [longitude]="position?.lng()"
+      (idle)="mapReady()"
       >
       <sebm-google-map-marker
-        [latitude]="location?.lat"
-        [longitude]="location?.lng">
+        [latitude]="position?.lat()"
+        [longitude]="position?.lng()">
         <sebm-google-map-info-window>
-          <p>{{location | json}}</p>
+          <p>{{position?.toUrlValue()}}</p>
         </sebm-google-map-info-window>
       </sebm-google-map-marker>
     </sebm-google-map>
@@ -34,21 +35,20 @@
 
 
 
-    <div *ngFor="let photo of (items | renderPhotoForView)">
-      <pre >{{ photo | json }}</pre>
-
+    <div *ngFor="let photo of (items | add$ImgAttrs:320)">
       <ion-card *ngIf="photo">
-      <img [ngStyle]="{'max-width.px': 320}" [src]="photo.$src"/>
+        <img [ngStyle]="{'max-width.px': 320}" [src]="photo.$img?.src"/>
         <ion-card-content>
           <ion-card-title>
             {{photo.filename}}
             <ion-icon name="star" *ngIf="photo.isFavorite"></ion-icon>
           </ion-card-title>
-          <p > taken: {{ photo.$localTime }} </p>
-          <p [hidden]="!photo.location"> gps: [{{photo.location?.coordinates}}] <p>
+          <p > taken: {{ photo.localTime.toString().slice(0,24) }} </p>
+          <p [hidden]="!photo.position"> gps: {{photo.position | json}} <p>
           <p class="truncate"> {{photo.uuid}} </p>
         </ion-card-content>
       </ion-card>
+      <pre >{{ photo | json }}</pre>
     </div>
   </div>
 </ion-content>

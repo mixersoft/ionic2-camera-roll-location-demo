@@ -9,8 +9,8 @@ import { TabsPage } from '../pages/tabs/tabs';
 import { SharedModule } from '../shared/shared.module';
 import { AgmCoreModule } from 'angular2-google-maps/core';
 import {
-  CameraRollWithLoc, MockCameraRollWithLoc,
-  ImageServiceFactory, ImageService, CordovaImageService, renderPhotoForView
+  CameraRollWithLocFactory, CameraRollWithLoc, MockCameraRollWithLoc,
+  ImageServiceFactory, ImageService, CordovaImageService, add$ImgAttrs
 } from "../shared/camera-roll/index";
 
 @NgModule({
@@ -20,7 +20,7 @@ import {
     ContactPage,
     HomePage,
     TabsPage,
-    renderPhotoForView
+    add$ImgAttrs
   ],
   imports: [
     IonicModule.forRoot(MyApp),
@@ -46,12 +46,7 @@ import {
   , {
     provide: CameraRollWithLoc
     , deps: [Platform]
-    , useFactory: (platform: Platform)=>{
-        if (platform.is("cordova"))
-          return new CameraRollWithLoc()
-        else
-          return new MockCameraRollWithLoc()
-      }
+    , useFactory: CameraRollWithLocFactory
   }
 ]
 })
